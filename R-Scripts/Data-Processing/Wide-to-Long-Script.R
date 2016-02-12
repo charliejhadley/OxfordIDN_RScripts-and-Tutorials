@@ -54,8 +54,9 @@ worldbank_wide_to_long <- function(file = NA){
                                   strsplit(x = unique(as.character(reshaped.df$Year)), split = "[..]"),
                                   "[[", 1),2)
   )
-  ## Replace .. representing missing values with NA
+  ## Replace .. representing missing values with empty string
   reshaped.df[reshaped.df == ".."] <- NA
+  reshaped.df[is.na(reshaped.df)] <- ""
   reshaped.df
   
 }

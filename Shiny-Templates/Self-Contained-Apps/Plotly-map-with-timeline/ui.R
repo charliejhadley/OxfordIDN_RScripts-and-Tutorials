@@ -10,9 +10,9 @@ library(DT)
 
 example_data_frame <-
   data.frame(
-    "Send Location" = c("50.97178 13.960129"),
+    "Send Location" = c("50.97178\n 13.960129"),
     "Send City" = c("DEU, Mockethal"),
-    "Receive Location" = c("50.97178 13.960129"),
+    "Receive Location" = c("50.97178\n 13.960129"),
     "Receive City" = c("DEU, Mockethal"),
     "Date" = c("1800-01-01"),
     "Category" = c("A")
@@ -35,54 +35,43 @@ shinyUI(fluidPage(
   HTML(
     "<h2>Plot.ly Scattergeo Plot with Timeline to Filter out Data</h2>"
   ),
-  #     fluidRow(
-  #     column(HTML("Filter letters by date sent?"), width = 3),
-  #     column(uiOutput("show_timeslider_UI"), width = 2)
-  #     ),
-#   wellPanel(
-#     uiOutput("show_letters_where_receive_unknown_UI"),
-#     uiOutput("show_timeslider_UI"),
-#     # uiOutput("legend_type_UI"),
-#     fluidRow(column(
-#       uiOutput("time_period_of_interest_UI"),
-#       width = 12
-#     ))
-#   ),
   sidebarLayout(
     sidebarPanel(
       uiOutput("show_timeslider_UI"),
       # uiOutput("legend_type_UI"),
       uiOutput("time_period_of_interest_UI"),
-      uiOutput("show_letters_before_date_UI"),
-      HTML(
-        "<p>This Shiny app is a template designed by Martin Hadley in the IT Services Department of Oxford University for the Live Data Project</p>",
-        "<p>The template takes a .csv file with the following structure</p>"
-      ),
-      datatable(example_data_frame,options = list(dom = 't', autowidth = "50%",rownames = FALSE), rownames = FALSE),
-      HTML(
-        "<br>",
-        "<p>The example data in this application is an anonymised subset of data collected from the 19th Century postal network, the size of each point
-        corresponds to the number of letters sent from that location.</p>"
-      ),
-      HTML(
-        "<br><p>The interactive map below is provided by the <a href=http://plot.ly>plot.ly</a> R package and provides the following features:</p>",
-        "<ul>",
-        "<li>Zoom with scrollwheel/touch</li>",
-        "<li>Hide a location by clicking its corresponding trace in the legend</li>",
-        "</ul>"
-      ),
-      HTML("<a rel='license' href='http://creativecommons.org/licenses/by/4.0/'><img alt='Creative Commons License' style='border-width:0' 
-src='https://i.creativecommons.org/l/by/4.0/88x31.png' /></a><br /><span xmlns:dct='http://purl.org/dc/terms/' 
-           href='http://purl.org/dc/dcmitype/InteractiveResource' property='dct:title' rel='dct:type'>Plot.ly Scattergeo Plot with Timeline 
-           to Filter out Data</span> by <span xmlns:cc='http://creativecommons.org/ns#' property='cc:attributionName'>Live Data Project</span> 
-           is licensed under a <a rel='license' href='http://creativecommons.org/licenses/by/4.0/'>Creative Commons Attribution 4.0 International License</a>."), 
-      width = 6
+      uiOutput("show_letters_before_date_UI"), 
+      width = 4
     ),
     mainPanel(
       uiOutput("nothing_to_display_UI"),
       plotlyOutput("europe_map", height = "100%"),
-      width = 6
+      width = 8
     )
-  )
+  ),
+wellPanel(
+  HTML(
+    "<p>This Shiny app is a template designed by Martin Hadley in the IT Services Department of Oxford University for the Live Data Project</p>",
+    "<p>The template takes a .csv file with the following structure</p>"
+  ),
+  datatable(example_data_frame,options = list(dom = 't', autowidth = "50%",rownames = FALSE), rownames = FALSE),
+  HTML(
+    "<br>",
+    "<p>The example data in this application is an anonymised subset of data collected from the 19th Century postal network, the size of each point
+    corresponds to the number of letters sent from that location.</p>"
+  ),
+  HTML(
+    "<br><p>The interactive map below is provided by the <a href=http://plot.ly>plot.ly</a> R package and provides the following features:</p>",
+    "<ul>",
+    "<li>Zoom with scrollwheel/touch</li>",
+    "<li>Hide a location by clicking its corresponding trace in the legend</li>",
+    "</ul>"
+  ),
+  HTML("<a rel='license' href='http://creativecommons.org/licenses/by/4.0/'><img alt='Creative Commons License' style='border-width:0' 
+       src='https://i.creativecommons.org/l/by/4.0/88x31.png' /></a><br /><span xmlns:dct='http://purl.org/dc/terms/' 
+       href='http://purl.org/dc/dcmitype/InteractiveResource' property='dct:title' rel='dct:type'>Plot.ly Scattergeo Plot with Timeline 
+       to Filter out Data</span> by <span xmlns:cc='http://creativecommons.org/ns#' property='cc:attributionName'>Live Data Project</span> 
+       is licensed under a <a rel='license' href='http://creativecommons.org/licenses/by/4.0/'>Creative Commons Attribution 4.0 International License</a>.")
+)
 
 ))
