@@ -1,8 +1,14 @@
-### =======================================================================
-### ==== Processing Files from http://databank.worldbank.org/ ============
-### This code file will import an exported dataset from the worldbank,
-### Convert the file to long format and drop unnecessary information
-
+## =============================== License ========================================
+## ================================================================================
+## This work is distributed under the MIT license, included in full within the parent directory
+## Copyright Owner: University of Oxford
+## Date of Authorship: 2016
+## Author: Martin John Hadley (orcid.org/0000-0002-3039-6849)
+## ======= Description
+## Purpose: Processing Files from http://databank.worldbank.org/
+## This code file will import an exported dataset from the worldbank,
+## Convert the file to long format and drop unnecessary information
+## ================================================================================
 
 worldbank_wide_to_long <- function(file = NA){
   
@@ -60,8 +66,4 @@ worldbank_wide_to_long <- function(file = NA){
   reshaped.df
   
 }
-
-data.df <- worldbank_wide_to_long(file = "Data_Extract_From_World_Development_Indicators_Data.csv")
-
-data.df
 
