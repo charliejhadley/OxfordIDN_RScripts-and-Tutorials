@@ -40,7 +40,8 @@ shinyUI(fluidPage(
       uiOutput("show_timeslider_UI"),
       # uiOutput("legend_type_UI"),
       uiOutput("time_period_of_interest_UI"),
-      uiOutput("show_letters_before_date_UI"), 
+      uiOutput("show_letters_before_date_UI"),
+      uiOutput("show_routes_UI"),
       width = 4
     ),
     mainPanel(

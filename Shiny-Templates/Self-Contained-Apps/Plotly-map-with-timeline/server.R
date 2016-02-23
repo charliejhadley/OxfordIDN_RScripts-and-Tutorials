@@ -51,6 +51,10 @@ shinyServer(function(input, output, session){
     checkboxInput("show_timeslider", label = "Filter data by date?", value = TRUE)
   })
   
+  output$show_routes_UI <- renderUI({
+    checkboxInput("show_routes", label = "Show routes?", value = TRUE)
+  })
+  
   output$show_letters_before_date_UI <- renderUI({
     
     dates <- example_map_data$Date
@@ -115,9 +119,7 @@ shinyServer(function(input, output, session){
     if(empty(subset_entries)){
       return()
     }
-    
-    
-    
+
     all_locations <- unique(c(subset_entries$Sender.LatLong.String, subset_entries$Receiver.LatLong.String))
     
     ## sent location tallies
@@ -206,6 +208,92 @@ shinyServer(function(input, output, session){
     location_tallies
   })
   
+  ### ===== Route Tallies
+  
+  route_tallies <- reactive({
+    
+    if(is.null(input$show_timeslider)){
+      return()
+    }
+    
+    if(input$show_timeslider == TRUE){
+      subset_entries <- subset(example_map_data,
+                               Date >= as.POSIXct(paste0(input$time_period_of_interest[1]-1,"/12/31")) &
+                                 Date <= as.POSIXct(paste0(input$time_period_of_interest[2]+1,"/01/01")))
+      
+    } else {
+      subset_entries <- subset(example_map_data,
+                               Date <= as.POSIXct(paste0(input$show_letters_before_date,"/01/01")))
+      
+    }
+    
+    if(empty(subset_entries)){
+      return()
+    }
+    
+    send_receive_pairs <- data.frame("send" = subset_entries$Sender.LatLong.String,
+                                     "receive" = subset_entries$Receiver.LatLong.String, stringsAsFactors = FALSE)
+    unique_routes <- send_receive_pairs[!duplicated(apply(send_receive_pairs,1,function(x) paste(sort(x),collapse=''))),]
+    
+    
+    ## ==== Route Tallies
+    
+    route_tallies <- table(paste(send_receive_pairs$send,send_receive_pairs$receive))
+    route_tallies <- as.data.frame(route_tallies)
+    # as.character(var1) for string splitting
+    route_tallies$Var1 <- as.character(route_tallies$Var1)
+    
+    ### ============= Split route tallies back to send/receive locations
+    route_tallies <- data.frame("send.lat" = sapply(strsplit(route_tallies$Var1, " "), "[[", 1),
+                                "send.lon" = sapply(strsplit(route_tallies$Var1, " "), "[[", 2),
+                                "receive.lat" = sapply(strsplit(route_tallies$Var1, " "), "[[", 3),
+                                "receive.lon" = sapply(strsplit(route_tallies$Var1, " "), "[[", 4),
+                                "Freq" = route_tallies$Freq)
+    
+    ## =====  Get letter series for each route
+    
+    ## create empty vector
+    category.per.route <- as.character()
+    
+    get.category.for.route <- function(route){
+      
+      send <- paste(route$send.lat, route$send.lon)
+      receive <- paste(route$receive.lat, route$receive.lon)
+      
+      
+      entries <<- subset_entries[subset_entries$Sender.LatLong.String == send &
+                                   subset_entries$Receiver.LatLong.String == receive, ]
+      category.per.route.local <- as.character(entries$Category)
+      
+      if(length(unique(category.per.route.local)) > 1){
+        category.per.route <<- append(category.per.route, "multiple categories")
+      } else {
+        category.per.route <<- append(category.per.route, unique(category.per.route.local))
+      }
+    }
+    
+    ## populate letter.series.per.route vector
+    for (i in 1:nrow(route_tallies)) {
+      get.category.for.route(route_tallies[i,])
+    }
+    ## Add letter.series.per.route to route_tallies
+    route_tallies$Category <- category.per.route
+    ## A unique id is required per trace
+    route_tallies$ID <- 1:nrow(route_tallies)
+    
+    # as.numeric for plotting
+    route_tallies$send.lat <- as.numeric(as.character(route_tallies$send.lat))
+    route_tallies$send.lon <- as.numeric(as.character(route_tallies$send.lon))
+    route_tallies$receive.lat <- as.numeric(as.character(route_tallies$receive.lat))
+    route_tallies$receive.lon <- as.numeric(as.character(route_tallies$receive.lon))
+    
+    # Return object
+    route_tallies
+  })
+  
+  
+  
+  
   output$nothing_to_display_UI <- renderUI({
     
     if(empty(location_tallies())){
@@ -227,6 +315,7 @@ shinyServer(function(input, output, session){
     
     # route_tallies <- route_tallies()
     location_tallies <- location_tallies()
+    route_tallies <- route_tallies()
     
     if(empty(location_tallies)){
       return()
@@ -246,7 +335,7 @@ shinyServer(function(input, output, session){
       lakecolor = "#999999")
     
     ## locations first
-    plot_ly(location_tallies, lon = lon, lat = lat, marker = list(size = rescale(Letters.Sent + Letters.Received, to = c(7,20))),
+    world_map <- {plot_ly(location_tallies, lon = lon, lat = lat, marker = list(size = rescale(Letters.Sent + Letters.Received, to = c(7,20))),
             type = "scattergeo", locationmode = "country",
             text = paste0("Location Name: ",Name,"<br>",
                           "Letters sent from location: ",Letters.Sent,"<br>",
@@ -264,7 +353,31 @@ shinyServer(function(input, output, session){
           xanchor = "auto",
           yanchor = "top"
         )
+      )}
+    
+    if(is.null(input$show_routes)){
+      return
+    }
+    
+    if(input$show_routes){
+      world_map %>% add_trace(
+        data = route_tallies, lon = list(send.lon, receive.lon),
+        lat = list(send.lat, receive.lat),
+        # text = paste0("Messages addressed to/from location: ",Freq,"<br>"),
+        type = 'scattergeo',
+        # locationmode = 'country names', # Used for identifying places
+        inherit = FALSE,
+        group = ID,
+        # hoverinfo = "text",
+        mode = 'lines',
+        line = list(
+          width = 0.4, color = "#6db8de", opacity = 1
+        ),
+        marker = list(size = rescale(Freq, to = c(7,20)), opacity = 0.4), showlegend = FALSE
       )
+    } else
+      world_map
+    
   })
   
   
