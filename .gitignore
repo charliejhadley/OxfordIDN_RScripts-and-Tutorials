@@ -1,6 +1,4 @@
-# CSV files
-*.csv
-
-#Ignore all xlsx files
-*.xlsx
-*.xls
+# Ignore RProject files
+*.Rproj.user
+*.Rhistory
+*.RData
