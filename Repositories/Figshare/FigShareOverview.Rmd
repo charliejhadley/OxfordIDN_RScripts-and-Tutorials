@@ -1,0 +1,38 @@
+---
+title: "FigShare"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# The FigShare Repository
+
+FigShare is a generic data repository capable of generating DOI.
+
+# rfigshare
+
+Package for writing and reading data from FigShare.
+
+## Read Data
+
+Obtain FigShare objects via their DOI:
+
+```{r obtain_figshare_object}
+library(rfigshare)
+
+```
+
+## Deposit Data
+
+I will write this later
+
+# rfigshare and Shiny
+
+I need to write instructions on how to incorporate login to a Shiny app.
+
+
+
+
+

@@ -1,0 +1,33 @@
+.shiny-progress .bar {
+background-color: #FF0000;
+.opacity = 0.8;
+}
+.shiny-progress .progress {
+height:7px;
+}
+
+.shiny-busy .progress-message {
+	font-size: 40px;
+}
+
+.shiny-progress-container {
+  position: inherit;
+  top: on;
+  width: 100%;
+  /* Make sure it draws above all Bootstrap components */
+  z-index: 2000;
+}
+
+.progress-text {
+	  position:	;
+  right: inherit;
+  height: inherit;
+  width: inherit;
+	font-size: 40px;
+	color: red;
+	float: left;
+}
+
+.shiny-progress-container {
+	color: blue;
+}--!>
