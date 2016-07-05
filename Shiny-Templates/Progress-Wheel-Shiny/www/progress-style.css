@@ -12,20 +12,20 @@ height:7px;
 
 .shiny-progress-container {
   position: inherit;
-  top: on;
   width: 100%;
   /* Make sure it draws above all Bootstrap components */
   z-index: 2000;
 }
 
 .progress-text {
-	  position:	;
-  right: inherit;
+  top: 50% !important;
+  left: 50% !important;
+  margin-top: -100px !important;
+  margin-left: -250px !important;
   height: inherit;
   width: inherit;
 	font-size: 40px;
 	color: red;
-	float: left;
 }
 
 .shiny-progress-container {

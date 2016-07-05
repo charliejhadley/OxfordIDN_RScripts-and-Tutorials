@@ -14,7 +14,7 @@ output$table <- renderTable({
   
   # Create a Progress object
   progress <- shiny::Progress$new()
-  progress$set(message = "Computing data", value = 0)
+  progress$set(message = HTML("<strong>Title</strong> Computing data"), value = 0)
   # Close the progress when this reactive exits (even if there's an error)
   on.exit(progress$close())
   
