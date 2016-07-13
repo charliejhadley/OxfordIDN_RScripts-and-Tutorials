@@ -1,13 +1,10 @@
 library(shiny)
 library(visNetwork)
-library(shinyjs)
 
 shinyUI(fluidPage(
+  uiOutput("reactive_output"),
   sidebarLayout(
     sidebarPanel(
-      useShinyjs(),
-      extendShinyjs(text = jscode),
-      textInput("link", ""),
       selectInput(
         "colour_dontchange",
         label = "Colour (don't change click)",
@@ -17,6 +14,11 @@ shinyUI(fluidPage(
         "shape_do_change",
         label = "shape (do change)",
         choices = c("circle", "square")
+      ),
+      selectInput(
+        "focus_do_change",
+        label = "foucs on node (do change)",
+        choices = 1:8
       )
     ),
     mainPanel(visNetworkOutput("the_network"))
