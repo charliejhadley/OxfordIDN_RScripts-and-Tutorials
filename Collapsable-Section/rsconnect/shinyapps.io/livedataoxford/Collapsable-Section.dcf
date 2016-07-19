@@ -1,0 +1,10 @@
+name: Collapsable-Section
+account: livedataoxford
+server: shinyapps.io
+appId: 114280
+bundleId: 504195
+url: https://livedataoxford.shinyapps.io/Collapsable-Section/
+when: 1468446136.44752
+asMultiple: FALSE
+asStatic: FALSE
+ignoredFiles: collapsable-section.R

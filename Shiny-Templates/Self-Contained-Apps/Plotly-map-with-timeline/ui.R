@@ -62,7 +62,7 @@ wellPanel(
     corresponds to the number of letters sent from that location.</p>"
   ),
   HTML(
-    "<br><p>The interactive map below is provided by the <a href=http://plot.ly>plot.ly</a> R package and provides the following features:</p>",
+    "<br><p>The interactive map above is provided by the <a href=http://plot.ly>plot.ly</a> R package and provides the following features:</p>",
     "<ul>",
     "<li>Zoom with scrollwheel/touch</li>",
     "<li>Hide a location by clicking its corresponding trace in the legend</li>",
