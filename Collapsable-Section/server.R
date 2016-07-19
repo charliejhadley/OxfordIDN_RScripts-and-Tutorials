@@ -12,6 +12,11 @@ source("legend.R", local = T)
 
 shinyServer(function(input, output, session) {
   
+  output$some_svg <- renderUI({
+    some_svg
+  })
+  
+  
   output$colour_legend_ui <- renderUI({
     HTML(colour_legend)
   })

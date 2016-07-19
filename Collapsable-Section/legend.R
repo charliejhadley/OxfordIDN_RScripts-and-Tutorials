@@ -1,3 +1,17 @@
+
+some_svg <- HTML(paste0(
+  '<svg width="100" height="100">',
+    '<g transform="translate(40,40)">',
+  '<circle r="20" stroke="black" fill="white"></circle> <text dx="-30" dy="40">333333333</text>',
+  '</g>',
+  '</svg>')
+)
+
+
+
+
+
+
 semi_circle_column <- function(width, colour){
   paste0(
     '<div class="col-md-',width,'">',

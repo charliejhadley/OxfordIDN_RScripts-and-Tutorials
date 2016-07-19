@@ -4,6 +4,7 @@ library(shinyBS)
 
 shinyUI(fluidPage(
   wellPanel("This is an app with a collapsible section that contains a colour legend"),
+  uiOutput("some_svg"),
   bsCollapse(id = "collapseExample", open = NULL,
              bsCollapsePanel("Click to show/hide legend", uiOutput("colour_legend_ui"), style = "default")),
   sidebarLayout(
