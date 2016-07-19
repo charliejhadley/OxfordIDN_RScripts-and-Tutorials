@@ -96,6 +96,8 @@ shinyServer(function(input, output, session){
     }
   })
   
+  foobar <- reactive({print(input$time_period_of_interest)})
+  
 
   ### ==== Location Tallies
   
@@ -107,8 +109,8 @@ shinyServer(function(input, output, session){
     
     if(input$show_timeslider == TRUE){
       subset_entries <- subset(example_map_data,
-                               Date >= as.POSIXct(paste0(input$time_period_of_interest[1]-1,"/12/31")) &
-                                 Date <= as.POSIXct(paste0(input$time_period_of_interest[2]+1,"/01/01")))
+                               Date >= input$time_period_of_interest[1] &
+                                 Date <= input$time_period_of_interest[2])
       
     } else {
       subset_entries <- subset(example_map_data,
