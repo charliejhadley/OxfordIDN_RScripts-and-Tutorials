@@ -1,0 +1,250 @@
+---
+title: "Caching Repositories"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(csv)
+library(rdrop2)
+```
+
+# Dropbox
+
+## Bandwidth Limiting
+
+Traffic limits for free Dropbox accounts are quite detailed here: https://www.dropbox.com/en/help/4204. At the time of writing, 20th July 2016, the limits are:
+
+- The total amount of traffic that all of your links and file requests together can generate without getting banned is 20 GB per day.
+- The total number of downloads that all of your links together can generate is 100,000 downloads per day.
+
+# Dropbox API Access with rdrop2
+
+The rdrop2 library provides a very useful wrapper for the Dropbox API, but we must do some work if we intend to use rdrop2 within a shiny app. This is because when initiating the `rdrop2` library we must authenticate ourselves using `drop_auth()` which expects interaction via a browser window - and we're simply not setup for that. We therefore store the authentication token against the symbol `token` and save this object using `saveRDS` for later use.
+
+```{r, eval=FALSE, include=FALSE}
+library(rdrop2)
+token <- drop_auth(new_user = TRUE)
+saveRDS(token, "droptoken.rds")
+```
+
+The token can then be loaded as follows:
+
+```{r, eval=F}
+token <- readRDS("droptoken.rds")
+drop_acc(dtoken = token)
+```
+
+## Accessing Files
+
+Using `drop_get(path = , local.file = )` we can download the file at `path` into the working directory with the filename `local.file`
+
+```{r}
+drop_get('/Private_Cache-Tests/UK_Prime_Ministers.csv', local_file = "pms_data.csv")
+library(csv)
+str(read.csv("pms_data.csv"))
+```
+
+Note that if a file does not exist, `drop_get` will return `FALSE`.
+
+```{r}
+drop_get('/Private_Cache-Tests/non-existant.csv', local_file = "pms_data.csv")
+```
+
+# Persistent Storage
+
+Following advise from http://shiny.rstudio.com/articles/persistent-data-storage.html, the type of persistence we want is described as:
+
+"you save a new file every time there is new data"
+
+The script will follow this procedure:
+
+- Check remote file exists
+- FALSE: [Right-Join-All local files] and exit
+- TRUE: Next step
+- Check if remote is newer than any existing file
+- FALSE: [Right-Join-All local files] and exit
+- TRUE: Download file
+- [Right-Join-All local files] and exit
+
+For a simple demonstration, consider the following three datasets:
+
+- `local_df` is a copy of the data uploaded with the app
+- `remote_df` is a remote copy downloaded due to a revision
+- `remote_2_df` is a second remote copy (downloaded after `remote_df`) downloaded due a revision
+
+```{r}
+local_df <- data.frame("a" = c("c", "e", "f"),
+                       "b" = c(1, 2, 3))
+remote_df <- data.frame("a" = c("h","c", "e", "f"),
+                        "b" = c(7,1, 2, 3))
+remote_2_df <- data.frame("a" = c("h","c", "e", "f"),
+                          "b" = c(7,1,88, 3))
+```
+
+Write these files to the working directory with unique names guaranteed by `digest(paste0(as.integer(Sys.time()),runif(1)))` 
+
+```{r}
+write.csv(file = "local_file.csv", x = local_df, row.names = F)
+write.csv(remote_df,sprintf("%s_%s.csv", digest::digest(paste0(as.integer(Sys.time()),runif(1))), "user_downloaded"),row.names = F)
+write.csv(remote_2_df,sprintf("%s_%s.csv", digest::digest(paste0(as.integer(Sys.time()),runif(1))), "user_downloaded"),row.names = F)
+```
+
+Order the files according to their modification dates:
+
+```{r}
+user_downloaded_files <- list.files()[grepl(pattern = "user[_]downloaded", list.files())]
+dates <- unlist(lapply(user_downloaded_files, function(x) file.mtime(x)))
+user_downloaded_files[order(dates)]
+```
+
+Use `join_all` from the `plyr` library to perform a right join and store against `data_to_use`
+
+```{r}
+lapply(c("local_file.csv", user_downloaded_files[order(dates)]), function(x) {
+  read.csv(x)
+}) %>%
+  join_all(match = "all", type = "right") -> data_to_use
+```
+
+## Detailed Procedure
+
+```{r}
+local_file_name <- "pms_data.csv"
+unique_name_fn <- function(){sprintf("%s_%s.csv", digest::digest(paste0(as.integer(Sys.time()),runif(1))), "user_downloaded")}
+```
+
+Get modification dates for all local files and the external file
+
+```{r}
+all_local_files <- c(local_file_name,list.files()[grepl(pattern = "user[_]downloaded", list.files())])
+all_local_files_mtime <- unlist(lapply(all_local_files, function(x) file.mtime(x)))
+remote_file_mtime <- dmy_hms(drop_history('/Private_Cache-Tests/UK_Prime_Ministers.csv')[1,modified])
+```
+
+If external file is newer than any of the remote files then download new file and append to `all_local_files` 
+
+```{r}
+
+if(!any(all_local_files_mtime > as.integer(remote_file_mtime))){
+  store_fname <- unique_name_fn()
+  drop_get('/Private_Cache-Tests/UK_Prime_Ministers.csv', local_file = store_fname, overwrite = T)
+  all_local_files <- c(all_local_files, store_fname)
+}
+```
+
+Reorder by modified time
+
+```{r}
+all_local_files_mtime <- unlist(lapply(all_local_files, function(x) file.mtime(x)))
+all_local_files <- all_local_files[order(all_local_files_mtime)]
+```
+
+Join all
+
+```{r}
+data_to_use <- join_all(lapply(all_local_files, function(x) {read.csv(x)}), match = "all", type = "right")
+data_to_use <- data_to_use[!duplicated(data_to_use),]
+```
+
+
+
+## OLD:
+
+Following advise from http://shiny.rstudio.com/articles/persistent-data-storage.html, the type of persistence we want is dexscribed as:
+
+"you save a new file every time there is new data"
+
+There is much difficulty if we have one file that gets overwritten because there are likely to be race-conditions. To get around this we follow this procedure:
+
+- Upload copy of data named "up-to-date_filename.csv" with Shiny app during deployment
+- User visits shiny app
+- Shiny app checks Dropbox for file with `drop_get` which returns `TRUE` or `FALSE`, and downloads the file if `TRUE`
+
+```{r}
+drop_exists('/Private_Cache-Tests/UK_Prime_Ministers.csv', local_file = "pms_data.csv")
+```
+
+- If file does not exist then load local version of "up-to-date_filename.csv"
+
+- If file does exist then check the modification date of both files, if the remote copy is newer then create a unique filename and download the file. Otherwise, do not download the file.
+
+```{r}
+library(lubridate)
+dropbox_file_modified_date <- dmy_hms(drop_history('/Private_Cache-Tests/UK_Prime_Ministers.csv')[1,modified])
+local_file_modified_date <- file.mtime("unique-filename-shiny/up-to-date_pms_data.csv")
+
+if(dropbox_file_modified_date > local_file_modified_date){
+  user_downloaded_filename <- sprintf("%s_%s.csv", as.integer(Sys.time()),digest::digest(runif(1)), "user_downloaded.csv")
+  drop_get('/Private_Cache-Tests/UK_Prime_Ministers.csv', local_file = user_downloaded_filename, overwrite = T)
+} else {
+  "use local file"
+}
+```
+
+- Test whether the "up-to-date_filename.csv" is identical to the newly downloaded file, if so then rename the file 
+
+
+
+- If ithe file 
+
+
+```{r}
+
+
+digest::digest(runif(1))
+runif(1)
+data
+```
+
+
+## Caching Files
+
+When deploying a shiny app we will deploy a current version of the datafile along with the shiny app, which we will call "up-to-date_FileName". 
+
+
+## OLD: Caching Public Files
+
+I have a shared folder called "Public_Cache-Tests" which contains an .csv file that I wish to cache within a shiny app.
+
+```{r}
+public_cache_folder <- "https://www.dropbox.com/sh/q7yi1ffhhf15evu/AAB2pcUQNXyxfg-HYaFBb0s0a/"
+public_PMs_file <- "UK_Prime_Ministers.csv"
+```
+
+Files can be downloaded from Dropbox using `download.file` but if the file does not exist or you have exceeded your daily bandwidth limit a html page will be downloaded rather than the target file. The following are very basic tests looking for 404 or 4204 headers:
+
+```{r}
+library(httr)
+
+http_status(GET(paste0("https://www.dropbox.com/sh/q7yi1ffhhf15evu/AAB2pcUQNXyxfg-HYaFBb0s0a/foo.lit")))
+
+url.exists(paste0("https://www.dropbox.com/sh/q7yi1ffhhf15evu/AAB2pcUQNXyxfg-HYaFBb0s0a/foo.lit"))
+```
+
+```{r}
+download_dropbox_file <-
+  function(shared_folder = NA,
+           file_name = NA,
+           dest_file = NA) {
+    download.file(paste0(shared_folder,
+                         file_name, "?dl=1"),
+                  destfile = dest_file)
+  }
+```
+
+The function can be called as follows for our example:
+
+```{r}
+download_dropbox_file(shared_folder = public_cache_folder,
+                      file_name = public_PMs_file,
+                      dest_file = "UK_Prime_Ministers.csv")
+```
+
+Problematically, if one attempts to 
+
+
+
+
+
+
