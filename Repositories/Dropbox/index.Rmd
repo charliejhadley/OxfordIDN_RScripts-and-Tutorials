@@ -34,7 +34,14 @@ In general, Dropbox is widely recognised as being an integral component of many 
 
 ### Dropbox API Access with rdrop2
 
-The <a href=https://github.com/karthik/rdrop2>rdrop2</a> library provides a very useful wrapper for the Dropbox API, in order to use the library it must be loaded and authenticated against your Dropbox account - note that this will launch a browser window.
+The <a href=https://github.com/karthik/rdrop2>rdrop2</a> library provides a very useful wrapper for the Dropbox API, that allows the following operations to be performed:
+
+- Access account details
+- Access file information
+- Read files
+- Write files
+
+In order to use the library it must be loaded and authenticated against your Dropbox account - note that this will launch a browser window.
 
 ```{r}
 library(rdrop2)
@@ -248,7 +255,7 @@ library(rsconnect)
 deployApp(appDir = "unique-filename-shiny/", appName = "Dropbox_Cache_Example")
 ```
 
-Below is an embedded copy of this application:
+Below is an embedded copy of this application, the code for which is available [here](https://github.com/ox-it/Live-Data_Scripts-and-Templates/tree/gh-pages/Repositories/Dropbox/Dropbox_Cache_Example).
 
 <iframe src="https://livedataoxford.shinyapps.io/Dropbox_Cache_Example/"rameborder="0" width="100%" height="750px">Loading</iframe>
 

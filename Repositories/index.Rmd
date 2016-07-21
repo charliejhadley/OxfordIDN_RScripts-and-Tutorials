@@ -12,28 +12,89 @@ output:
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-# What is a Data Repository?
+# What are Data Repositories?
 
-Lorem ipsum dolor sit amet, consectetur adipiscing elit. Cras semper nisl in magna gravida, eu tempor dui convallis. Morbi non condimentum quam. Vestibulum eleifend est justo, eu pellentesque orci volutpat convallis. Duis erat magna, auctor non lacinia sed, interdum eu elit. Suspendisse in interdum erat. Suspendisse arcu nulla, hendrerit vel convallis id, ultricies facilisis mi. Pellentesque tincidunt, purus quis aliquet bibendum, nisl ex ullamcorper massa, ac luctus tellus turpis id dolor. Suspendisse fringilla sapien nec lacinia volutpat. Vestibulum ipsum lorem, commodo sed hendrerit eu, feugiat vitae odio. Donec convallis iaculis est id ultrices. Curabitur eget eros ultrices, ultrices odio sit amet, fringilla lacus. Donec nec diam id enim mollis semper at nec magna. Vivamus elit mauris, pellentesque eget hendrerit eget, hendrerit a mauris. Fusce convallis convallis erat ut tempus. 
+At there best, data repositories provide two functions:
+
+1. A method for sharing datasets, either publically or privately
+
+1. A definitive, citable location for a dataset
+
+These two functions are ever more important as research becomes more data-driven across every discipline, and as funders increasingly mandate Open Access not only for publications but also publication data. Already EPSRC requires that any metric or visualisation included in a publication based on work they funded must be made replicable by providing the underlying data.
+
+This document describes a number of data repositories and how one might use them to incorporate data hosted with these services into an interactive data visualisation built with [shiny](http://shiny.rstudio.com) and a number of other tools. Examples of what is described for each repository (if possible), include:
+
+- Reading data
+- Writing data
+- Caching data within a shiny app
 
 ## Selecting a Data Repository
 
-This guide contains advice on the following repositories:
+For the purposes of this document, there are three types of data repository:
 
-- [Dropbox](#Dropbox Overview)
-- [Figshare](#Figshare Overview)
-- ORA Data
+- File Sharing Repositories: Provide only the facility for sharing files between multiple devices and users
+- Hosted Databases: Host databases against which SQL queries may be performed, with granular permissioning tools
+- Data Repositories: Fully versioned platforms providing DOI and collaboration tools
+
+In a future iteration of this document an interactive interface will be provided for the comparison of the different respositories.
 
 # Data Repositories
+
+The repositories in this section all provide at least the following functionality:
+
+- Meta-data rich containers for research data
+- DOI for individual deposits
+- Controlled access, differs between service and may only apply to licensing of data
+
+Note that all repositories detailed have at least a free tier or otherwise are entirely free at the point of use.
 
 ```{r child = 'Figshare/index.Rmd'}
 ```
 
+```{r child = 'ORA-Data/index.Rmd'}
+```
+
+```{r child = 'Zenodo/index.Rmd'}
+```
+
+# Hosted Databases
+
+The repositories in this section all provide the following functionality:
+
+- A hosted SQL engine against which queries can be performed
+- Permissioning for entire databases, potential permissioning at individual table level
+- CRUD via API and/or ODBC
+
+Note that not all hosted databases described below provide a free tier.
+
+```{r child = 'AccessWebApp/index.Rmd'}
+```
+
+```{r child = 'Azure/index.Rmd'}
+```
+
+```{r child = 'ORDS/index.Rmd'}
+```
+
 # File Sharing Repositories
+
+The repositories in this section all provide the following functionality:
+
+- Ability to synchronise files simply between devices
+- Controlled access, including public and private files
+
+
+```{r child = 'Box/index.Rmd'}
+```
 
 ```{r child = 'Dropbox/index.Rmd'}
 ```
 
+```{r child = 'GoogleDrive/index.Rmd'}
+```
+
+```{r child = 'OneDrive/index.Rmd'}
+```
 
 
 

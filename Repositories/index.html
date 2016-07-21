@@ -230,23 +230,42 @@ div.tocify {
 </div>
 
 
-<div id="what-is-a-data-repository" class="section level1">
-<h1>What is a Data Repository?</h1>
-<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Cras semper nisl in magna gravida, eu tempor dui convallis. Morbi non condimentum quam. Vestibulum eleifend est justo, eu pellentesque orci volutpat convallis. Duis erat magna, auctor non lacinia sed, interdum eu elit. Suspendisse in interdum erat. Suspendisse arcu nulla, hendrerit vel convallis id, ultricies facilisis mi. Pellentesque tincidunt, purus quis aliquet bibendum, nisl ex ullamcorper massa, ac luctus tellus turpis id dolor. Suspendisse fringilla sapien nec lacinia volutpat. Vestibulum ipsum lorem, commodo sed hendrerit eu, feugiat vitae odio. Donec convallis iaculis est id ultrices. Curabitur eget eros ultrices, ultrices odio sit amet, fringilla lacus. Donec nec diam id enim mollis semper at nec magna. Vivamus elit mauris, pellentesque eget hendrerit eget, hendrerit a mauris. Fusce convallis convallis erat ut tempus.</p>
+<div id="what-are-data-repositories" class="section level1">
+<h1>What are Data Repositories?</h1>
+<p>At there best, data repositories provide two functions:</p>
+<ol style="list-style-type: decimal">
+<li><p>A method for sharing datasets, either publically or privately</p></li>
+<li><p>A definitive, citable location for a dataset</p></li>
+</ol>
+<p>These two functions are ever more important as research becomes more data-driven across every discipline, and as funders increasingly mandate Open Access not only for publications but also publication data. Already EPSRC requires that any metric or visualisation included in a publication based on work they funded must be made replicable by providing the underlying data.</p>
+<p>This document describes a number of data repositories and how one might use them to incorporate data hosted with these services into an interactive data visualisation built with <a href="http://shiny.rstudio.com">shiny</a> and a number of other tools. Examples of what is described for each repository (if possible), include:</p>
+<ul>
+<li>Reading data</li>
+<li>Writing data</li>
+<li>Caching data within a shiny app</li>
+</ul>
 <div id="selecting-a-data-repository" class="section level2">
 <h2>Selecting a Data Repository</h2>
-<p>This guide contains advice on the following repositories:</p>
+<p>For the purposes of this document, there are three types of data repository:</p>
 <ul>
-<li><a href="#Dropbox">Dropbox</a></li>
-<li><a href="#Figshare">Figshare</a></li>
-<li>ORA Data</li>
+<li>File Sharing Repositories: Provide only the facility for sharing files between multiple devices and users</li>
+<li>Hosted Databases: Host databases against which SQL queries may be performed, with granular permissioning tools</li>
+<li>Data Repositories: Fully versioned platforms providing DOI and collaboration tools</li>
 </ul>
+<p>In a future iteration of this document an interactive interface will be provided for the comparison of the different respositories.</p>
 </div>
 </div>
 <div id="data-repositories" class="section level1">
 <h1>Data Repositories</h1>
-<div id="the-figshare-repository" class="section level2">
-<h2>The FigShare Repository</h2>
+<p>The repositories in this section all provide at least the following functionality:</p>
+<ul>
+<li>Meta-data rich containers for research data</li>
+<li>DOI for individual deposits</li>
+<li>Controlled access, differs between service and may only apply to licensing of data</li>
+</ul>
+<p>Note that all repositories detailed have at least a free tier or otherwise are entirely free at the point of use.</p>
+<div id="figshare-overview" class="section level2">
+<h2>Figshare Overview</h2>
 <p>FigShare is a generic data repository capable of generating DOI.</p>
 <div id="rfigshare" class="section level3">
 <h3>rfigshare</h3>
@@ -285,9 +304,42 @@ my_deposits &lt;- fs_browse()</code></pre>
 <h2>rfigshare and Shiny</h2>
 <p>I need to write instructions on how to incorporate login to a Shiny app.</p>
 </div>
+<div id="ora-data-overview" class="section level2">
+<h2>ORA Data Overview</h2>
+</div>
+<div id="zenodo-overview" class="section level2">
+<h2>Zenodo Overview</h2>
+</div>
+</div>
+<div id="hosted-databases" class="section level1">
+<h1>Hosted Databases</h1>
+<p>The repositories in this section all provide the following functionality:</p>
+<ul>
+<li>A hosted SQL engine against which queries can be performed</li>
+<li>Permissioning for entire databases, potential permissioning at individual table level</li>
+<li>CRUD via API and/or ODBC</li>
+</ul>
+<p>Note that not all hosted databases described below provide a free tier.</p>
+<div id="office-365-overview" class="section level2">
+<h2>Office 365 Overview</h2>
+</div>
+<div id="azure-overview" class="section level2">
+<h2>Azure Overview</h2>
+</div>
+<div id="ords-overview" class="section level2">
+<h2>ORDS Overview</h2>
+</div>
 </div>
 <div id="file-sharing-repositories" class="section level1">
 <h1>File Sharing Repositories</h1>
+<p>The repositories in this section all provide the following functionality:</p>
+<ul>
+<li>Ability to synchronise files simply between devices</li>
+<li>Controlled access, including public and private files</li>
+</ul>
+<div id="box-overview" class="section level2">
+<h2>Box Overview</h2>
+</div>
 <div id="dropbox-overview" class="section level2">
 <h2>Dropbox Overview</h2>
 <p><a href="http://www.dropbox.com">Dropbox</a> is a tremendously popular and powerful file sharing platform, it is <em>not</em> a fully-fledged data repository service and should not be used as if it were - it does not provide DOI and rate limits public access to files. However, there are many cases where it is useful to host data files on Dropbox during a project particularly where collaborations with other users are important. Publicly shared files can be accessed via a link, for instance: <a href="https://www.dropbox.com/s/yht5dt4o3ec7rof/UK_Prime_Ministers.csv?dl=0">https://www.dropbox.com/s/yht5dt4o3ec7rof/UK_Prime_Ministers.csv?dl=0</a></p>
@@ -488,10 +540,8 @@ output$summary &lt;- renderDataTable({
 <pre class="r"><code>library(shiny)
 library(rsconnect)
 deployApp(appDir = &quot;unique-filename-shiny/&quot;, appName = &quot;Dropbox_Cache_Example&quot;)</code></pre>
-<p>Below is an embedded copy of this application:</p>
-<iframe src="https://livedataoxford.shinyapps.io/Dropbox_Cache_Example/" frameborder="0" width="100%" height="750px">
-Loading
-</iframe>
+<p>Below is an embedded copy of this application, the code for which is available <a href="https://github.com/ox-it/Live-Data_Scripts-and-Templates/tree/gh-pages/Repositories/Dropbox/Dropbox_Cache_Example">here</a>.</p>
+<p>&lt;iframe src=“<a href="https://livedataoxford.shinyapps.io/Dropbox_Cache_Example/%22rameborder" class="uri">https://livedataoxford.shinyapps.io/Dropbox_Cache_Example/&quot;rameborder</a>=”0&quot; width=“100%” height=“750px”&gt;Loading</iframe></p>
 </div>
 </div>
 </div>
