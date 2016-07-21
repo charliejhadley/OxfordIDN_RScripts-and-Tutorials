@@ -119,7 +119,7 @@ if (drop_exists('/Private_Cache-Tests/UK_Prime_Ministers.csv', dtoken = token)) 
     if (!any(all_local_files_mtime > as.integer(remote_file_mtime))) {
       drop_get(
         '/Private_Cache-Tests/UK_Prime_Ministers.csv',
-        local_file = store_fname,
+        local_file = unique_name_fn(),
         overwrite = T,
         dtoken = token
       )
@@ -170,11 +170,33 @@ if(sum(grepl(pattern = "user[_]downloaded", list.files())) > 5) {
 
 The directory XXXunique-filename-shinyXXX contains a shiny app that pulls from the same Dropbox file as above using the same caching methodology. The apps workds as follows:
 
-```{r}
+```{r, eval=F}
+## Shiny Server File
+
+token <- readRDS("droptoken.rds")
+print(token)
+drop_acc(dtoken = token)
+
+original_file_name <- "pms_data.csv"
+unique_name_fn <- function(){} ## See above
+
+sort_locals_by_date <- function(){} ## See above
+
+shinyServer(
+  function(input, output){
+    
+  }
+)
 
 ```
 
 
+The app is deployed as follows:
 
+```{r}
+library(shiny)
+library(rsconnect)
+deployApp(appDir = "unique-filename-shiny/", appName = "Dropbox_Cache_Example")
+```
 
 
