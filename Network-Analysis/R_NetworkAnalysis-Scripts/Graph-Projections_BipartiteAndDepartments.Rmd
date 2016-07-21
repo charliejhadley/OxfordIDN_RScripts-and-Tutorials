@@ -1,0 +1,224 @@
+---
+title: "Graph Projections and Collapsing Nodes by Type"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+	echo = TRUE,
+	message = FALSE,
+	warning = FALSE
+)
+```
+
+Often graph consist of nodes with extrinsic properties (i.e. node species) that are more interesting (or potentially easier to visualise) than the intrinsic properties (i.e. vertex degree) of the nodes.
+
+The two graphs below represent a set of social events attended by a set of individuals, the [Davis Southern Women Dataset](https://networkdata.ics.uci.edu/netdata/html/davis.html). The network with two node colours is the bipartite network, with events represented in purple and individuals in blue. The second graph represents a one-mode projection of the network on events, with the edge with scaling with the number of individuals attending both events. See [Bipartite Projections section](#Bipartite Projections) for instructions on how to generate this.
+
+```{r, echo=FALSE}
+library(igraph)
+library(visNetwork)
+library(plyr)
+## Load Davis Southern Women Graph
+davis_graph <- nexus.get("Davis")
+V(davis_graph)$title = names(V(davis_graph))
+V(davis_graph)$color = mapvalues(V(davis_graph)$type, from = c(0, 1), to = c("lightblue", "purple"))
+E(davis_graph)$color = "blue"
+
+visSave(visIgraph(davis_graph, layout = "layout.bipartite", idToLabel = F) %>% visOptions(highlightNearest = TRUE, width = 300, height = 300), file = "davis_bipartite.html")
+
+E(davis_graph)$weight = rep(1, length(E(davis_graph)))
+davis_events <- bipartite_projection(davis_graph)$proj2
+E(davis_events)$width <- E(davis_events)$weight
+
+visSave(visIgraph(davis_events) %>% visOptions(highlightNearest = TRUE, width = 300,height = 300), file = "davis_events.html")
+
+library(htmltools)
+HTML(
+    paste0('<div class="row" >',
+   '<div class="col-md-6 col-centered" style="height: 350px;>',
+   includeHTML("davis_bipartite.html"),
+   '</div>',
+   # '<div class="col-md-3 col-centered">',
+   # includeHTML("researcher_interactions.html"),
+   # '</div>',
+      '<div class="col-md-6 col-centered" style="height: 350px;>',
+   includeHTML("davis_events.html"),
+   '</div>',
+   '</div>'
+))
+```
+
+The two graphs below represent a network of collaborations between researchers from different departments. The network with more vertices encodes the department by colour, and nodes represent individuals - but it is difficult to understand how the departments work together. In the graph with fewer vertices, the nodes have been "collapsed" based on their department and the edge width represents the number of collaborations between the two departments. See [Projecting by Node Property](#Projecting by Node Property (or Collapsing by Vertex Type)) on how to achieve this for your data.
+
+```{r, echo=FALSE}
+departments <- c("Physics","English","Law","Biology","Maths","Politics","Chemistry","History","Business")
+researchers <- data.frame(
+  "id" = 1:120,
+  "department" = sample(departments, 120, replace = T),
+  stringsAsFactors = F
+)
+interactions <- data.frame(
+  "from" = sample(1:120,replace = T),
+  "to" = sample(1:120,replace = T)
+)
+library(RColorBrewer)
+researcher_interactions <- graph.data.frame(d = interactions, vertices = researchers)
+researcher_interactions <- simplify(researcher_interactions)
+V(researcher_interactions)$color <- mapvalues(researchers$department, from = departments, to = brewer.pal(9,"Paired"))
+visSave(visIgraph(researcher_interactions) %>% visOptions(width = 300, height = 300, highlightNearest = TRUE), file = "researcher_interactions.html")
+
+researcher_interactions <- graph.data.frame(d = interactions, vertices = researchers)
+researcher_interactions <- simplify(researcher_interactions)
+department_interactions <- contract(researcher_interactions, mapping = as.numeric(mapvalues(researchers$department, from = departments, to = 1:length(departments))))
+V(department_interactions)$title <- departments
+V(department_interactions)$label <- departments
+V(department_interactions)$name <- departments
+V(department_interactions)$color <- brewer.pal(9,"Paired")
+E(department_interactions)$color <- "lightblue"
+
+E(department_interactions)$weight <- rep(1,length(E(department_interactions)))
+department_simple <- simplify(department_interactions)
+V(department_simple)$title <- departments
+V(department_simple)$label <- departments
+V(department_simple)$name <- departments
+V(department_simple)$color <- brewer.pal(9,"Paired")
+E(department_simple)$color <- "lightblue"
+department_simple <- as.undirected(department_simple)
+E(department_simple)$width <- E(department_simple)$weight
+
+visSave(visIgraph(department_simple) %>%
+  visOptions(highlightNearest = TRUE, width = 300, height = 300), file = "department_interactions.html")
+
+HTML(
+    paste0('<div class="row">',
+   '<div class="col-md-6 col-centered" style="height: 350px;">',
+   includeHTML("researcher_interactions.html"),
+   '</div>',
+   # '<div class="col-md-3 col-centered">',
+   # includeHTML("researcher_interactions.html"),
+   # '</div>',
+      '<div class="col-md-6 col-centered" style="height: 350px;">',
+   includeHTML("department_interactions.html"),
+   '</div>',
+   '</div>'
+))
+```
+
+## Projecting by Node Property (or Collapsing by Vertex Type)
+
+A good example dataset for demonstrating how to re-project a graph is a collaboration network between researchers, which we generate below using `sample`
+
+```{r}
+departments <- c("Physics","English","Law","Biology","Maths","Politics","Chemistry","History","Business")
+researchers <- data.frame(
+  "id" = 1:120,
+  "department" = sample(departments, 120, replace = T),
+  stringsAsFactors = F
+)
+interactions <- data.frame(
+  "from" = sample(1:120,replace = T),
+  "to" = sample(1:120,replace = T)
+)
+```
+
+An igraph object is created using `graph.data.frame` and simplied to remove self-loops, colours are assigned to each department using `mapvalues` on the `researchers$department` column. The graph is displayed using `visNetwork` for interactivity.
+
+```{r}
+library(RColorBrewer)
+researcher_interactions <- graph.data.frame(d = interactions, vertices = researchers)
+researcher_interactions <- simplify(researcher_interactions)
+V(researcher_interactions)$color <- mapvalues(researchers$department, from = departments, to = brewer.pal(9,"Paired"))
+visIgraph(researcher_interactions)
+```
+
+Graph can be contracted by merging multiple vertices into one through the `contract` function. The code below is a modification of a documentation example, the `mapping` argument specifies the vertex groupings on a positional basis; the 6th vertex (labelled "f") is in group 1 and the 10th element (labelled "j") is in group 3:
+
+```{r}
+g <- make_ring(10)
+g$name <- "Ring"
+V(g)$name <- letters[1:vcount(g)]
+E(g)$weight <- runif(ecount(g))
+g2 <- contract(g, mapping = c(1,1,1,1,1,1,2,2,2,3),
+                        vertex.attr.comb=toString)
+plot(g2)
+```
+
+While the igraph package is capable of transferring attributes between graph (see igraph-attribute-combination documentation), in this case as we are going to collapse our network on verticles it is advised to start with an unadultered graph. We therefore recreate the `researcher_interactions` igraph object before contracting on departments and then apply appropriate vertex and edge attributes.
+
+```{r}
+researcher_interactions <- graph.data.frame(d = interactions, vertices = researchers)
+researcher_interactions <- simplify(researcher_interactions)
+department_interactions <- contract(researcher_interactions, mapping = as.numeric(mapvalues(researchers$department, from = departments, to = 1:length(departments))))
+V(department_interactions)$title <- departments
+V(department_interactions)$label <- departments
+V(department_interactions)$name <- departments
+V(department_interactions)$color <- brewer.pal(9,"Paired")
+E(department_interactions)$color <- "lightblue"
+visIgraph(department_interactions) %>%
+  visOptions(highlightNearest = TRUE)
+```
+
+### Edge Weights
+
+The output of contract is a multigraph, with multiple edges allowed between nodes representing multiple individuals from two departments interacting with one another. Multigraph are difficult to work with from both a visualisation and analysis point of view, the `simplify` function removes multiple edges (and loops) and will sum edge weights - provided they exist in the original graph.
+
+```{r}
+E(department_interactions)$weight <- rep(1,length(E(department_interactions)))
+department_simple <- simplify(department_interactions)
+V(department_simple)$title <- departments
+V(department_simple)$label <- departments
+V(department_simple)$name <- departments
+V(department_simple)$color <- brewer.pal(9,"Paired")
+E(department_simple)$color <- "lightblue"
+visIgraph(department_simple)
+```
+
+It is also convenient to remove the directedness of the edges and scale the width of the edges according to the edge weight (number of interactions between departments):
+
+```{r}
+department_simple <- as.undirected(department_simple)
+E(department_simple)$width <- E(department_simple)$weight
+visIgraph(as.undirected(department_simple))
+```
+
+
+## Bipartite Projections
+
+Bipartite networks consist of two distinct sets of nodes, where there are only connections between nodes of different sets. A good example is a social network comprising social events and attendees of those events; people are connected to events, not to people and vice versa.
+
+The boilerplate example of a bipartite network is the Davis Southern Women displayed below, social events are in purple and the attendees of events in blue.
+
+```{r}
+davis_graph <- nexus.get("Davis")
+V(davis_graph)$title = names(V(davis_graph))
+V(davis_graph)$color = mapvalues(V(davis_graph)$type, from = c(0, 1), to = c("lightblue", "purple"))
+E(davis_graph)$color = "blue"
+visIgraph(davis_graph, layout = "layout.bipartite", idToLabel = F)
+```
+
+The "bipartiteness" of the graph is inferred from the `V(graph)$type` attribute:
+
+```{r}
+V(davis_graph)$type
+```
+
+It is trivial to return two different projections available from the bipartite network using `bipartite_projection`, the two projections are available through `proj1` and `proj2`. Below the event projection is displayed, note that the vertex attribute `color` has been preserved:
+
+```{r}
+visIgraph(bipartite_projection(davis_graph)$proj2)
+```
+
+### Edge Weights
+
+The `bipartite_projection` function will sum edge weights - provided they exist in the original graph.
+
+```{r}
+E(davis_graph)$weight = rep(1, length(E(davis_graph)))
+davis_events <- bipartite_projection(davis_graph)$proj2
+E(davis_events)$width <- E(davis_events)$weight
+visIgraph(davis_events)
+```
+
+
+

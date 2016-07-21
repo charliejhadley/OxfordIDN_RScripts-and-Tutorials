@@ -1,0 +1,9 @@
+name: Dropbox_Cache_Example
+account: livedataoxford
+server: shinyapps.io
+appId: 115916
+bundleId: 511558
+url: https://livedataoxford.shinyapps.io/Dropbox_Cache_Example/
+when: 1469107783.88603
+asMultiple: FALSE
+asStatic: FALSE

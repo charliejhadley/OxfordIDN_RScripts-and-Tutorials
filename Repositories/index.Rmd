@@ -1,0 +1,102 @@
+---
+title: "Data Repositories"
+output: 
+  html_document:
+    toc: true
+    toc_float: true
+    number_sections: false
+    code_folding: show
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# What are Data Repositories?
+
+At there best, data repositories provide two functions:
+
+1. A method for sharing datasets, either publically or privately
+
+1. A definitive, citable location for a dataset
+
+These two functions are ever more important as research becomes more data-driven across every discipline, and as funders increasingly mandate Open Access not only for publications but also publication data. Already EPSRC requires that any metric or visualisation included in a publication based on work they funded must be made replicable by providing the underlying data.
+
+This document describes a number of data repositories and how one might use them to incorporate data hosted with these services into an interactive data visualisation built with [shiny](http://shiny.rstudio.com) and a number of other tools. Examples of what is described for each repository (if possible), include:
+
+- Reading data
+- Writing data
+- Caching data within a shiny app
+
+## Selecting a Data Repository
+
+For the purposes of this document, there are three types of data repository:
+
+- File Sharing Repositories: Provide only the facility for sharing files between multiple devices and users
+- Hosted Databases: Host databases against which SQL queries may be performed, with granular permissioning tools
+- Data Repositories: Fully versioned platforms providing DOI and collaboration tools
+
+In a future iteration of this document an interactive interface will be provided for the comparison of the different respositories.
+
+# Data Repositories
+
+The repositories in this section all provide at least the following functionality:
+
+- Meta-data rich containers for research data
+- DOI for individual deposits
+- Controlled access, differs between service and may only apply to licensing of data
+
+Note that all repositories detailed have at least a free tier or otherwise are entirely free at the point of use.
+
+```{r child = 'Figshare/index.Rmd'}
+```
+
+```{r child = 'ORA-Data/index.Rmd'}
+```
+
+```{r child = 'Zenodo/index.Rmd'}
+```
+
+# Hosted Databases
+
+The repositories in this section all provide the following functionality:
+
+- A hosted SQL engine against which queries can be performed
+- Permissioning for entire databases, potential permissioning at individual table level
+- CRUD via API and/or ODBC
+
+Note that not all hosted databases described below provide a free tier.
+
+```{r child = 'AccessWebApp/index.Rmd'}
+```
+
+```{r child = 'Azure/index.Rmd'}
+```
+
+```{r child = 'ORDS/index.Rmd'}
+```
+
+# File Sharing Repositories
+
+The repositories in this section all provide the following functionality:
+
+- Ability to synchronise files simply between devices
+- Controlled access, including public and private files
+
+
+```{r child = 'Box/index.Rmd'}
+```
+
+```{r child = 'Dropbox/index.Rmd'}
+```
+
+```{r child = 'GoogleDrive/index.Rmd'}
+```
+
+```{r child = 'OneDrive/index.Rmd'}
+```
+
+
+
+
+

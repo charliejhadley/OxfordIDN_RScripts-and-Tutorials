@@ -1,0 +1,55 @@
+---
+title: "FigShare"
+output: html_document
+---
+
+```{r, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Figshare Overview
+
+FigShare is a generic data repository capable of generating DOI.
+
+### rfigshare
+
+Package for writing and reading data from FigShare.
+
+#### Read Data
+
+Possible to read your own and other's data
+
+#### Read Your Own Data
+
+Browse through deposits:
+
+```{r browse_figshare_deposits}
+library(rfigshare)
+my_deposits <- fs_browse()
+```
+
+Access information about a deposit with `fs_details`, note that the output of the object has been formatted for display purposes:
+
+```{r}
+fs_download(article_id = 3425729)
+
+article_details <- fs_details(article_id = 3425729)
+```
+
+
+#### Read Other's Data
+
+I guess we can make it such that we can read anyone else's stuff
+
+### Deposit Data
+
+I will write this later
+
+## rfigshare and Shiny
+
+I need to write instructions on how to incorporate login to a Shiny app.
+
+
+
+
+
