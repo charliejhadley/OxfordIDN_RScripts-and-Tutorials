@@ -7,7 +7,7 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-## The FigShare Repository
+## Figshare Overview
 
 FigShare is a generic data repository capable of generating DOI.
 

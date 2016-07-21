@@ -250,7 +250,6 @@ deployApp(appDir = "unique-filename-shiny/", appName = "Dropbox_Cache_Example")
 
 Below is an embedded copy of this application:
 
-<iframe src="https://livedataoxford.shinyapps.io/Dropbox_Cache_Example/"
- frameborder="0" width="100%" height="750px">Loading</iframe>
+<iframe src="https://livedataoxford.shinyapps.io/Dropbox_Cache_Example/"rameborder="0" width="100%" height="750px">Loading</iframe>
 
 

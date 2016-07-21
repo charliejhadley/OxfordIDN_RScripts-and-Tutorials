@@ -20,8 +20,8 @@ Lorem ipsum dolor sit amet, consectetur adipiscing elit. Cras semper nisl in mag
 
 This guide contains advice on the following repositories:
 
-- [Dropbox](#Dropbox)
-- [Figshare](#Figshare)
+- [Dropbox](#Dropbox Overview)
+- [Figshare](#Figshare Overview)
 - ORA Data
 
 # Data Repositories
