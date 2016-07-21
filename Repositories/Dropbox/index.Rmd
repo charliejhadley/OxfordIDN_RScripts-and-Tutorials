@@ -8,11 +8,11 @@ output:
     code_folding: show
 ---
 
-```{r setup, include=FALSE}
+```{r, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE, eval = FALSE)
 ```
 
-# Dropbox Overview
+## Dropbox Overview
 
 [Dropbox](http://www.dropbox.com) is a tremendously popular and powerful file sharing platform, it is *not* a fully-fledged data repository service and should not be used as if it were - it does not provide DOI and rate limits public access to files. However, there are many cases where it is useful to host data files on Dropbox during a project particularly where collaborations with other users are important. Publicly shared files can be accessed via a link, for instance: <a href="https://www.dropbox.com/s/yht5dt4o3ec7rof/UK_Prime_Ministers.csv?dl=0">https://www.dropbox.com/s/yht5dt4o3ec7rof/UK_Prime_Ministers.csv?dl=0</a>
 
@@ -21,8 +21,6 @@ The service provides a free tier that suits most of its users, and what this gui
 - Bandwidth Limiting
 - Changes to service
 
-## Bandwidth Limiting
-
 Publicly shared files in a free Dropbox account cannot be accessed without limit, the limits imposed are explained in detail <a href=https://www.dropbox.com/en/help/4204>here</a>. At the time of writing, 20th July 2016, the limits can be summarised as follows:
 
 - The total amount of traffic that all of your links and file requests together can generate without getting banned is 20 GB per day.
@@ -30,13 +28,11 @@ Publicly shared files in a free Dropbox account cannot be accessed without limit
 
 These limits are fairly standard for the industry and are generous, it is unlikely that the files you may wish to share via Dropbox and include within Shiny apps.
 
-## Changes to Service
-
 It is important to note that free accounts are subject to change without notice (to the extent detailed within Dropbox's [Terms of Service](https://www.dropbox.com/en_GB/privacy#terms)). There is historical precedence for Dropbox changing its service in a manner that might negatively affect a shiny app dependent on the platform, see details about the [new sharing model of 2012](https://blogs.dropbox.com/developers/2012/06/new-sharing-model-will-replace-public-folder/). 
 
 In general, Dropbox is widely recognised as being an integral component of many other services and therefore cannot radically change or revoke it's service without significant fallout but it is important that you do not build a funding bid or research service that is critically dependent on a free service like Dropbox. This is one of the reasons why caching files within shiny app directories is important, though.
 
-# Dropbox API Access with rdrop2
+### Dropbox API Access with rdrop2
 
 The <a href=https://github.com/karthik/rdrop2>rdrop2</a> library provides a very useful wrapper for the Dropbox API, in order to use the library it must be loaded and authenticated against your Dropbox account - note that this will launch a browser window.
 
@@ -68,7 +64,7 @@ Note that files may be accessed directly with their public links, however Dropbo
 head(read.csv("https://www.dropbox.com/s/yht5dt4o3ec7rof/UK_Prime_Ministers.csv?dl=1"))
 ```
 
-## Reading Files
+### Reading Files
 
 Files can be downloaded from Dropbox with the `drop_get` function, they're saved into the file specified to `local_file` and it is important to note by default the function will not `overwrite` files.
 
@@ -83,11 +79,11 @@ Note that if a file does not exist, `drop_get` will return `FALSE`.
 drop_get('/Private_Cache-Tests/non-existant.csv', local_file = "pms_data.csv", dtoken = token)
 ```
 
-## Writing Files
+### Writing Files
 
 I'll do this in a minute
 
-## Local Caching of Files
+### Local Caching of Files
 
 There is a fairly technical description of persistant data storage in shiny apps available <a href=http://shiny.rstudio.com/articles/persistent-data-storage.html>here</a> that is used as the template for the caching mechanism this tutorial describes. The procedure depends on the following paradigm:
 
@@ -114,7 +110,7 @@ Further, this procedure does not attempt to account for deltas and simply downlo
 
 The two sections below describe a script for caching on a local machine and in a shiny app, note that the shiny app utilises functions and code from the local script.
 
-### Local Script
+#### Local Script
 
 Set the `original_file_name` variable and define a function for creating unique file names based on `Sys.time` and a single random real number from `runif`. This is designed to account for multiple users of the shiny app attempting to create new files at exactly the same time, there is an extremely low probability of naming conflicts using this convention.
 
@@ -211,7 +207,7 @@ if (drop_exists('/Private_Cache-Tests/UK_Prime_Ministers.csv', dtoken = token)) 
 ```
 
 
-### Shiny Script
+#### Shiny Script
 
 The directory "Dropbox_Cache_Example" contains a shiny app that pulls from the same Dropbox file as above using the same caching methodology, the application's workhorse is an `eventReactive` call. When the "submit" button is clicked in the app the procedure described above is initiated and the result is supplied to the reactive variable `uk_prime_ministers` which is then called within `renderDataTable`. Note that to ensure that new files are checked for when the app is first loaded, the argument `ignoreNULL = FALSE` has been provied to `eventReactive`.
 

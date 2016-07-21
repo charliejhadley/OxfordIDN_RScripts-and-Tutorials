@@ -3,23 +3,23 @@ title: "FigShare"
 output: html_document
 ---
 
-```{r setup, include=FALSE}
+```{r, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-# The FigShare Repository
+## The FigShare Repository
 
 FigShare is a generic data repository capable of generating DOI.
 
-# rfigshare
+### rfigshare
 
 Package for writing and reading data from FigShare.
 
-## Read Data
+#### Read Data
 
 Possible to read your own and other's data
 
-### Read Your Own Data
+#### Read Your Own Data
 
 Browse through deposits:
 
@@ -34,22 +34,18 @@ Access information about a deposit with `fs_details`, note that the output of th
 fs_download(article_id = 3425729)
 
 article_details <- fs_details(article_id = 3425729)
-foo$title
-
-
-
 ```
 
 
-### Read Other's Data
+#### Read Other's Data
 
 I guess we can make it such that we can read anyone else's stuff
 
-## Deposit Data
+### Deposit Data
 
 I will write this later
 
-# rfigshare and Shiny
+## rfigshare and Shiny
 
 I need to write instructions on how to incorporate login to a Shiny app.
 

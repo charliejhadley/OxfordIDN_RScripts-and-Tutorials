@@ -1,0 +1,41 @@
+---
+title: "Data Repositories"
+output: 
+  html_document:
+    toc: true
+    toc_float: true
+    number_sections: false
+    code_folding: show
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# What is a Data Repository?
+
+Lorem ipsum dolor sit amet, consectetur adipiscing elit. Cras semper nisl in magna gravida, eu tempor dui convallis. Morbi non condimentum quam. Vestibulum eleifend est justo, eu pellentesque orci volutpat convallis. Duis erat magna, auctor non lacinia sed, interdum eu elit. Suspendisse in interdum erat. Suspendisse arcu nulla, hendrerit vel convallis id, ultricies facilisis mi. Pellentesque tincidunt, purus quis aliquet bibendum, nisl ex ullamcorper massa, ac luctus tellus turpis id dolor. Suspendisse fringilla sapien nec lacinia volutpat. Vestibulum ipsum lorem, commodo sed hendrerit eu, feugiat vitae odio. Donec convallis iaculis est id ultrices. Curabitur eget eros ultrices, ultrices odio sit amet, fringilla lacus. Donec nec diam id enim mollis semper at nec magna. Vivamus elit mauris, pellentesque eget hendrerit eget, hendrerit a mauris. Fusce convallis convallis erat ut tempus. 
+
+## Selecting a Data Repository
+
+This guide contains advice on the following repositories:
+
+- [Dropbox](#Dropbox)
+- [Figshare](#Figshare)
+- ORA Data
+
+# Data Repositories
+
+```{r child = 'Figshare/index.Rmd'}
+```
+
+# File Sharing Repositories
+
+```{r child = 'Dropbox/index.Rmd'}
+```
+
+
+
+
+
+
