@@ -1,7 +1,6 @@
 shinyUI(
   fluidPage(
-    wellPanel(""),
-    actionButton("update", label = "update"),
+    wellPanel(includeMarkdown("App_Description.Rmd"),actionButton("update", label = "update")),
     dataTableOutput("summary")
   )
 )

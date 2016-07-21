@@ -184,7 +184,12 @@ sort_locals_by_date <- function(){} ## See above
 
 shinyServer(
   function(input, output){
-    
+    uk_prime_ministers <- eventReactive(input$actionButtonID,
+                                        {
+                                          # Nested if from above
+                                        },
+                                        ignoreNULL = FALSE # Forces evaluation when app first loaded 
+                                        )
   }
 )
 
