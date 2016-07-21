@@ -6,8 +6,6 @@ library(digest)
 library(plyr)
 
 token <- readRDS("droptoken.rds")
-print(token)
-drop_acc(dtoken = token)
 
 original_file_name <- "pms_data.csv"
 unique_name_fn <-
@@ -25,6 +23,16 @@ sort_locals_by_date <- function() {
   sort_locals_by_date <-
     all_local_files[order(all_local_files_mtime)]
   sort_locals_by_date
+}
+
+clear_downloaded_files <- function() {
+  if (sum(grepl(pattern = "user[_]downloaded", list.files())) > 5) {
+    sorted_files <- sort_locals_by_date()
+    sorted_files <-
+      sorted_files[grepl(pattern = "user[_]downloaded", sorted_files)]
+    lapply(sorted_files[1:3], function(x)
+      file.remove(x))
+  }
 }
 
 shinyServer(function(input, output) {
@@ -53,13 +61,7 @@ shinyServer(function(input, output) {
                                               ## Import most recently updated file
                                               data_to_use <-
                                                 read.csv(sorted_files[length(sorted_files)])
-                                              if(sum(grepl(pattern = "user[_]downloaded", list.files())) > 5) {
-                                                sorted_files <- sort_locals_by_date()
-                                                sorted_files <-
-                                                  sorted_files[grepl(pattern = "user[_]downloaded", sorted_files)]
-                                                lapply(sorted_files[1:3], function(x)
-                                                  file.remove(x))
-                                              }
+                                              clear_downloaded_files()
                                               data_to_use
                                             } else {
                                               sorted_files <- sort_locals_by_date()
@@ -80,13 +82,7 @@ shinyServer(function(input, output) {
                                             ## Import most recently updated file
                                             data_to_use <-
                                               read.csv(sorted_files[length(sorted_files)])
-                                            if(sum(grepl(pattern = "user[_]downloaded", list.files())) > 5) {
-                                              sorted_files <- sort_locals_by_date()
-                                              sorted_files <-
-                                                sorted_files[grepl(pattern = "user[_]downloaded", sorted_files)]
-                                              lapply(sorted_files[1:3], function(x)
-                                                file.remove(x))
-                                            }
+                                            clear_downloaded_files()
                                             data_to_use
                                           }
                                         } else {
