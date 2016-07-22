@@ -1,0 +1,58 @@
+---
+title: "Google Drive Overview"
+output: 
+  html_document:
+    toc: true
+    toc_float: true
+    number_sections: false
+    code_folding: show
+---
+
+```{r, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Google Drive Overview
+
+[Google Drive](http://drive.google.com) is a tremendously popular and powerful file sharing platform provided by Google that integrates with there other services like Google Docs and Google Sheets. As with all file sharing services, it is important to remember it is not a fully-fledged data repository service and should not be used as if it were. However, there are many cases where it is useful to host data files on Dropbox during a project particularly where collaborations with other users are important. Publicly shared files can be accessed via a link, for instance: <a href="https://drive.google.com/open?id=0ByL5IOAvv3SLX3gwa2EtQ1FPd28">https://drive.google.com/open?id=0ByL5IOAvv3SLX3gwa2EtQ1FPd28</a>
+
+
+### Google Drive API Access with driver
+
+The <a href=https://github.com/Ironholds/driver>driver</a> library provides a basic wrapper for the Google Drive API, at the time of writing (July 2016) the only supported operations are:
+
+- Read files from Google Drive
+- Read file information (including comments)
+- Write files to Google Drive
+
+The library is not currently hosted on CRAN and therefore must be installed via `devtools`, after loading the library must be authenticated against your Google account - note that this will launch a browser window
+
+1. Create a new Google Drive API Project at https://console.cloud.google.com/projectselector/apis/api/drive/overview
+
+1. Navigate to "Credentials" in the API Manager screen and select "Create Credentials"
+
+1. Choose Oauth2
+
+1. You will get OAuth client details, save these:
+
+```{r}
+client_id <- "54158481761-p280079p56airgva6a9msocurc03fnib.apps.googleusercontent.com"
+client_secret <- "nEeYJu6kCFrY6GUMyvQDNmPS"
+```
+
+1. Set these options
+
+```{r}
+## devtools::install_github("1beb/RGoogleDrive")
+options(drive.app = client_id)
+options(drive.secret = client_secret)
+```
+
+1. Load the library and run `drive.auth()`
+
+```{r}
+library(RGoogleDrive)
+drive.auth()
+
+### But this didn't work... configuring this on the Google Console is complicated.
+```

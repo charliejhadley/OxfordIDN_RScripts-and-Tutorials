@@ -1,0 +1,12 @@
+<p>This Shiny app connects to a <a href=http://dropbox.com>Dropbox</a> account via the <a href=https://github.com/karthik/rdrop2>rdrop2</a> library and displays the data from this <a href=https://www.dropbox.com/s/yht5dt4o3ec7rof/UK_Prime_Ministers.csv?dl=0>file</a>.</p>
+
+<p>The app caches data by using persistent storage within the `appDir` on the hosted solution <a href=http://shinyapps.io>shinyapps.io</a>, by following this procedure whenever the "submit" button is pressed:</p>
+
+- Check remote file exists
+- FALSE: Import local file with most recent modification date
+- TRUE: Next step
+- Check remote file is newer than local files
+- TRUE: Download remote file to local directory and import
+- FALSE: Import local file with most recent modification date
+
+

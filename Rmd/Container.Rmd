@@ -1,0 +1,12 @@
+---
+title: "Bootstrap Grid"
+output: slidy_presentation
+runtime: shiny
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r child = 'Bootstrap-in-RMarkdown.Rmd'}
+```
