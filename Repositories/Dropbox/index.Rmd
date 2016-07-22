@@ -48,7 +48,7 @@ library(rdrop2)
 drop_auth()
 ```
 
-For shiny apps it is necessary to locally store the authentication token returned by `drop_auth`, the simplest method to ensure this works is to use `saveRDS` and `readRDS` to save and load the R object. The `token` *must* then be provided to every `drop_*` function call in a shiny app via the named argument `dtoken`; there isn't issue in doing this within an interactive R session, as seen in this document.
+For shiny apps it is necessary to locally store the authentication token returned by `drop_auth`, the simplest method to ensure this works is to use `saveRDS` and `readRDS` to save and load the R object. The `token` *must* then be provided to every `drop_*` function call in a shiny app via the named argument `dtoken`; there isn't issue in doing this within an interactive R session, as seen in this document. It is important to remember that the .RDS file contains private information that would allow others access to your Dropbox account, ensure to include this file in your `.gitignore` file if you are using git.
 
 ```{r, eval=FALSE}
 library(rdrop2)
@@ -86,17 +86,15 @@ Note that if a file does not exist, `drop_get` will return `FALSE`.
 drop_get('/Private_Cache-Tests/non-existant.csv', local_file = "pms_data.csv", dtoken = token)
 ```
 
-### Writing Files
-
-I'll do this in a minute
-
 ### Local Caching of Files
 
-There is a fairly technical description of persistant data storage in shiny apps available <a href=http://shiny.rstudio.com/articles/persistent-data-storage.html>here</a> that is used as the template for the caching mechanism this tutorial describes. The procedure depends on the following paradigm:
+In this instance, caching means keeping a local copy of a dataset that is "replaced" if the remote file is updated. This provides two advantages, if Dropbox is not available when the code is run the local copy provides a backup solution and prevents re-downloading potentially large datasets if no changes are detected. In the case of a shiny app this requires persistant data stores, there is a fairly technical description of persistant data storage in shiny apps available <a href=http://shiny.rstudio.com/articles/persistent-data-storage.html>here</a> that is used as the template for the caching mechanism this tutorial describes. The procedure depends on the following paradigm:
 
 ```
 "you save a new file every time there is new data"
 ```
+
+The versioning of file sharing services like Dropbox is not something that we will rely on for checking whether external files have been updated as there are potential hidden states and complexities that are undocumented. Therefore the caching procedure implemented below simply checks modification date, which may well result in unnecessary downloads of the remote file.
 
 The caching mechanism employed in this tutorial is as follows:
 
@@ -258,5 +256,11 @@ deployApp(appDir = "unique-filename-shiny/", appName = "Dropbox_Cache_Example")
 Below is an embedded copy of this application, the code for which is available [here](https://github.com/ox-it/Live-Data_Scripts-and-Templates/tree/gh-pages/Repositories/Dropbox/Dropbox_Cache_Example).
 
 <iframe src="https://livedataoxford.shinyapps.io/Dropbox_Cache_Example/"rameborder="0" width="100%" height="750px">Loading</iframe>
+
+### Writing to Dropbox
+
+
+
+
 
 
