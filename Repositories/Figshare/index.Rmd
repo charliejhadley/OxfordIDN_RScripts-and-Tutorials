@@ -1,0 +1,170 @@
+---
+title: "FigShare"
+output: html_document
+---
+
+```{r, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Figshare Overview
+
+[FigShare](http:www.figshare.com) is an extremely popular free to access data repository capable of generating DOI for deposited data, and supports versioning. It is therefore a useful option for researchers with data sets that will grow. Deposits can be made entirely private or embargoed as required by individual projects, but a DOI can be reserved before publishing the dataset making it easier to write associated materials and publications against the dataset.
+
+Deposits include a small range of standard meta-data attributes, but a long-form description can be provided and multiple files may be attached to a single deposit. The example used in this guide provides a useful overview of what is possible with figshare - ["Investigation into the number of desktop items on University staff computers, broken down by department and operating system"](https://figshare.com/articles/Investigation_into_the_number_of_desktop_items_on_University_staff_computers_broken_down_by_department_and_operating_system_/3425729).
+
+Files attached to public deposits like the one used in this guide can be accessed directly via a URL or the Figshare API - https://ndownloader.figshare.com/files/5449739
+
+### Figshare API Access with rfigshare
+
+The <a href="https://github.com/ropensci/rfigshare">rfigshare</a> library provides access to the Figshare API, allowing the following operations to be performed:
+
+- Read deposit meta data
+- Download files attached to deposits
+- Modify and add files existing deposits
+- Create new deposits
+
+In order to use the library it must be loaded and authenticated against your Figshare account - note that this will launch a browser window.
+
+```{r}
+library(rfigshare)
+fs_auth()
+```
+
+For shiny apps it is necessary to locally store the authentication token returned by `fs_auth`, this is easily achieved by copying the `.httr-oauth` saved to the working directory by `fs_auth` into the shiny app directory. It is important to remember that the `.httr-oauth` file contains private information that would allow others access to your Figshare account, ensure to include this file in your `.gitignore` file if you are using git.
+
+### Browsing Figshare Deposits
+
+It is possible to browse the entirety of Figshare through the `fig_browse` function, which returns a list of all deposits against your account.
+
+```{r}
+my_figshare_deposits <- fs_browse(mine = TRUE)
+```
+
+The following utility function allows us to extract the `article_id`, `title` and `published_date` from the `my_figshare_deposits` object.
+
+```{r, eval=TRUE}
+extract_data <- lapply(my_figshare_deposits, function(x){
+  
+  col_indices <- which(names(x) %in% c("article_id", "title","published_date"))
+  
+  x[col_indices]
+  
+})
+knitr::kable(as.data.frame(extract_data))
+```
+
+All Figshare deposits are assigned an `article_id` which forms part of the DOI, consider the DOI for our example dataset - https://dx.doi.org/10.6084/m9.figshare.3425729.v3 - the `artice_id` is 3425729 and details about this article can be obtained via `fs_details`
+
+```{r, eval=TRUE}
+article_details <- fs_details(article_id = 3425729)
+article_details$title
+```
+
+Individual files attached to a Figshare article are detailed within a list stored against `article_details$files`.
+
+```{r}
+knitr::knitr(as.data.frame(lapply(article_details$files,function(x){x[c("name","download_url")]})))
+```
+
+### Reading Files
+
+Publically shared files in Figshare deposits are directly accessible via their ndownloader.figshare.com address, the file we're interested in is https://ndownloader.figshare.com/files/5360960. As with any web-hosted file, this can easily be downloaded into the working directory with the `download.file` function and then imported via `read.csv`
+
+```{r}
+download.file(url = "https://ndownloader.figshare.com/files/5360960", destfile = "desktop_items.csv")
+knitr::kable(head(read.csv("desktop_items.csv")))
+```
+
+Public data files cannot be deleted or otherwise removed from Figshare (without extraudinary circumstances), it is therefore unimportant to test for whether a file exists or not. However, there may be situations where Figshares server are temporarily unavailable
+
+```{r}
+suppressWarnings({
+  download_try <- try(download.file(url = "https://ndownloader.figshare.com/files/non-existant-url", destfile = "desktop_items.csv"))
+if(class(download_try) == "try-error"){
+  "Download Failed"
+}})
+```
+
+### Local Caching of Files
+
+In this instance, caching means keeping a local copy of a dataset that is "replaced" if the remote file is updated. This provides two advantages, if Figshare is not available when the code is run the local copy provides a backup solution and it ensures the data is always as up to date as possible. In the case of a shiny app this requires persistant data stores, there is a fairly technical description of persistant data storage in shiny apps available <a href=http://shiny.rstudio.com/articles/persistent-data-storage.html>here</a> that is used as the template for the caching mechanism this tutorial describes. The procedure depends on the following paradigm:
+
+```
+"you save a new file every time there is new data"
+```
+
+Figshare provides a versioning system for deposits, the https://ndownloader.figshare.com/files/5360960 URL will always provide the most up-to-date version of the datafile and public files cannot be deleted. This informs our procedure for efficiently caching the files:
+
+- Is external file version number greater than the local version?
+- FALSE: Import local file
+- TRUE: Download remote file to local directory and import
+
+This procedure does not attempt to account for deltas and simply downloads a new copy of the remote file whenever it is updated - this could result in a large number of files within the shiny app. To account for this, the following step is added to the procedure:
+
+- If more than 3 local files exist, purge the oldest 2
+
+#### Local Script
+
+When first running the script generate a uniquely named file and store the version number of the dataset:
+
+```{r}
+target_article_id <- 3425729
+target_ndownloader_link <- "https://ndownloader.figshare.com/files/5360960"
+initial_version_number <- fs_details(article_id = target_article_id)$version
+write(downloaded_version_number, file = "initial_version_number.txt")
+```
+
+Define a function for creating unique file names based on `Sys.time` and a single random real number from `runif`. This is designed to account for multiple users of the shiny app attempting to create new files at exactly the same time, there is an extremely low probability of naming conflicts using this convention.
+
+```{r}
+unique_name_fn <- function(){digest::digest(paste0(as.integer(Sys.time()),runif(1)))}
+```
+
+
+Our algorithm
+
+```{r}
+external_version <- fs_details(article_id = target_article_id)$version
+local_version <- read.table(file = "initial_version_number.txt")[1,]
+write(external_version, file = paste0(f_name,"_downloaded_version_number",external_version,".txt"))
+external_version
+
+any(grepl(pattern = "user[_]downloaded", list.files()))
+
+if(external_version > local_version){
+  
+  f_name <- unique_name_fn()
+  
+  download.file(url = "https://ndownloader.figshare.com/files/5360960", 
+                destfile = paste0(f_name,"_user_downloaded.csv"))
+  
+  write(external_version, file = paste0(f_name,"_downloaded_version_number_",external_version,".txt"))
+}
+
+any(grepl(pattern = "user[_]downloaded", list.files()))
+
+## Get version and downloaded file names
+user_downloaded_version_files <- list.files()[grepl(pattern = "downloaded[_]version[_]number", list.files())]
+user_downloaded_files <- list.files()[grepl(pattern = "user[_]downloaded", list.files())]
+## Import files and get the unique code for the most up to date version
+user_downloaded_version <- unlist(lapply(user_downloaded_versions, function(x){read.table(x)[1,]}))
+most_upto_date <- gsub( "[_].*$", "", user_downloaded_version_files[which.max(user_downloaded_version)])
+## Return filename
+user_downloaded_files[grepl(pattern = most_upto_date, x = user_downloaded_files)]
+
+
+```
+
+ACTUAL SOLUTION:
+
+```{r}
+if (any(grepl(pattern = "user[_]downloaded", list.files()))) {
+  ## User downloaded files exist
+  
+} else {
+  ## Never downloaded a new version
+  
+}
+```
+
