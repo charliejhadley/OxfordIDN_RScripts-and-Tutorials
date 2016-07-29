@@ -57,8 +57,8 @@ shinyServer(function(input, output, session) {
   ## Add State_Names to shapefiles
   contiguous_fips_codes <- fips_codes[fips_codes$Contiguous.United.States. == "Y",]
   us_congressional_districts_shapefiles$State_Name <- mapvalues(us_congressional_districts_shapefiles$STATEFP, 
-                                                   from = contiguous_fips_codes$STATE, 
-                                                   to = contiguous_fips_codes$STATE_NAME)
+                                                                from = contiguous_fips_codes$STATE, 
+                                                                to = contiguous_fips_codes$STATE_NAME)
   
   ## =========================== UI Elements ======================================
   ## ==============================================================================
@@ -234,6 +234,6 @@ shinyServer(function(input, output, session) {
     
     
   })
-
+  
   
 })
