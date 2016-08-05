@@ -25,6 +25,7 @@ Publicly shared files in a free Dropbox account cannot be accessed without limit
 
 - The total amount of traffic that all of your links and file requests together can generate without getting banned is 20 GB per day.
 - The total number of downloads that all of your links together can generate is 100,000 downloads per day.
+- For paid accounts (£79/year) the download limit is removed and the bandwidth limit is increased to 200 GB.
 
 These limits are fairly standard for the industry and are generous, it is unlikely that the files you may wish to share via Dropbox and include within Shiny apps.
 
