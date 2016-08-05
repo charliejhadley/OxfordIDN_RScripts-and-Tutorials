@@ -2,7 +2,21 @@
 *.Rproj.user
 *.Rhistory
 *.RData
-.Rproj.user
+*.dcf
+
+# CSV files
+*.csv
+*.txt
+
+# PDFs
+*.pdf
+
+#Ignore all xlsx files
+*.xlsx
+*.xls
+
+*.Rproj.user
 *.rds
 *.httr-oauth
 .httr-oauth
+.Rproj.user
