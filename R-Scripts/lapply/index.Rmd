@@ -1,0 +1,10 @@
+---
+title: "lapply"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+lapply and its cousins are incredibly powerful functions
