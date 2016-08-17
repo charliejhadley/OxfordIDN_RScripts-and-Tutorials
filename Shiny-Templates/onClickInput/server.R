@@ -59,17 +59,6 @@ shinyServer(function(input, output, session) {
     )
   })
   
-  
-  #   output$the_network <- renderVisNetwork({
-  #     visN_edges <- visN_edges()
-  #
-  #     visNetwork(node = visN_nodes,
-  #                edges = visN_edges) %>% visNodes(shape = input$shape_do_change) %>%
-  #       visEvents(selectNode = "function(nodes) {
-  #                 Shiny.onInputChange('current_node_id', nodes);
-  #                 ;}")
-  # })
-  
   output$the_network <- renderVisNetwork({
     visN_edges <- visN_edges()
     
