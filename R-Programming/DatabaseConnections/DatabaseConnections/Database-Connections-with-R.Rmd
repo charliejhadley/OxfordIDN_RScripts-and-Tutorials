@@ -1,0 +1,31 @@
+---
+title: "Database Connections with R"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Machine Dependent
+
+These instructions are highly machine dependent.
+
+In general, using `RODBC` is recommended but is dependent on a number of system settings.
+
+# "ODBC headers sql.h and sqlext.h not found"
+
+Error discovered when installing `RODBC`
+
+I found this: https://support.rstudio.com/hc/en-us/community/posts/209676388-Successfully-solved-R-Studio-for-mac-can-not-support-RODBC
+
+I complimented that with this: http://stackoverflow.com/a/37993728/1659890
+
+1. brew install unixodbc
+1. brew link unixodbc (if missing this step, R still can not find those header files)
+1. install.packages('RODBC', type='source')
+
+# MySQL
+
+I used homebrew for mysql: https://gist.github.com/nrollr/a8d156206fa1e53c6cd6
+
