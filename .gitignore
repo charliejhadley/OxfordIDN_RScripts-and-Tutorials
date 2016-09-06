@@ -3,6 +3,7 @@
 *.Rhistory
 *.RData
 *.dcf
+.DS_Store
 
 # CSV files
 *.csv
