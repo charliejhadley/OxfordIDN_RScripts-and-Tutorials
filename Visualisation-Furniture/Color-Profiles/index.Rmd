@@ -1,0 +1,12 @@
+---
+title: "Untitled"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+Colors are hard. There are many resources listed here: http://graphicdesign.stackexchange.com/a/3815/71312
+
+This is a good utility: http://tools.medialab.sciences-po.fr/iwanthue/
