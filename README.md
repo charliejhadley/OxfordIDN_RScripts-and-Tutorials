@@ -6,6 +6,6 @@ Information about the project may be found here: http://blogs.it.ox.ac.uk/acit-r
 
 ## Case Studies
 
-This repository contains a selection of scripts and templates produced for the Live Data project, the repository and templates themselves are best explore through the associated github pages - http://ox-it.github.io/OxfordIDN_RScripts-and-Tutorials
+This repository contains a selection of scripts and templates produced for the Live Data project, the repository and templates themselves are best explore through the associated github pages - http://martinjhnhadley.github.io/OxfordIDN_RScripts-and-Tutorials
 
 Please note that while the code contained within is subject to the MIT license, the data upon which some scripts are dependent is excluded from the respository via the `.gitignore` file. If you wish to obtain access to this data for collaboration or further study, please use the contact details in the `.readme` file or dedicated github page for each script.
